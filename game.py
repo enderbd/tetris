@@ -1,7 +1,7 @@
 import pygame
 
-from constants import *
 from scripts.board import Board
+from scripts.settings import FPS, SCREEN_HEIGHT, SCREEN_WIDTH
 
 
 class TetrisGame:
@@ -16,14 +16,14 @@ class TetrisGame:
         self.drawable = pygame.sprite.Group()
         Board.containers = (self.updatable, self.drawable)
 
-        self.game_board = Board(NUM_ROWS, NUM_COLS, CELL_SIZE, (20, 20))
+        self.game_board = Board(offset=(20, 20))
 
     def run(self):
         while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
-
+            self.screen.fill("black")
             keys = pygame.key.get_pressed()
             if keys[pygame.K_q]:
                 self.running = False
