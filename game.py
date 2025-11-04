@@ -19,11 +19,13 @@ class TetrisGame:
         self.game_board = Board(offset=(20, 20))
 
     def run(self):
+        dt = 0
         while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
             self.screen.fill("black")
+            self.updatable.update(dt)
             keys = pygame.key.get_pressed()
             if keys[pygame.K_q]:
                 self.running = False
@@ -31,7 +33,7 @@ class TetrisGame:
             for s in self.drawable:
                 s.draw(self.screen)
             pygame.display.flip()
-            self.clock.tick(FPS)
+            dt = self.clock.tick(FPS) / 1000
 
 
 if __name__ == "__main__":

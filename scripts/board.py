@@ -1,5 +1,6 @@
 import pygame
-from .settings import NUM_COLS, NUM_ROWS, CELL_SIZE
+from .settings import NUM_COLS, NUM_ROWS, CELL_SIZE, ROTATE_CD
+from .tetromino import Tetromino
 
 
 class Board(pygame.sprite.Sprite):
@@ -18,9 +19,11 @@ class Board(pygame.sprite.Sprite):
         self.board_rect = pygame.Rect(self.offset, (self.width, self.height))
         self.board_surface = pygame.Surface(self.board_rect.size, pygame.SRCALPHA)
         self.board_color = (100, 100, 100, 200)
-        self.board_surface.fill(self.board_color)
         self.line_color = (255, 255, 255, 100)
         print(f"Board initialized: (w, h) = ({self.width}, {self.height})")
+        self.rotate = 0
+        self.rotate_timer = 0
+        self.moving_tetromino = None
 
     def draw_border(self, screen):
         pygame.draw.line(
@@ -63,9 +66,19 @@ class Board(pygame.sprite.Sprite):
             )
 
     def draw(self, screen):
+        self.board_surface.fill(self.board_color)
+        if self.moving_tetromino:
+            self.moving_tetromino.draw(self.board_surface)
         self.draw_border(self.board_surface)
         self.draw_cells(self.board_surface)
         screen.blit(self.board_surface, self.offset)
 
-    def update(self, screen):
-        pass
+    def update(self, dt):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_s]:
+            self.spawn_tetromino()
+        if self.moving_tetromino:
+            self.moving_tetromino.update(dt)
+
+    def spawn_tetromino(self):
+        self.moving_tetromino = Tetromino(shape="S", row=2, column=4)
