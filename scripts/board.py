@@ -1,5 +1,6 @@
 import pygame
-from .settings import NUM_COLS, NUM_ROWS, CELL_SIZE, ROTATE_CD
+
+from .settings import CELL_SIZE, NUM_COLS, NUM_ROWS
 from .tetromino import Tetromino
 
 
@@ -81,4 +82,4 @@ class Board(pygame.sprite.Sprite):
             self.moving_tetromino.update(dt)
 
     def spawn_tetromino(self):
-        self.moving_tetromino = Tetromino(shape="S", row=0, column=5)
+        self.moving_tetromino = Tetromino(shape="T", row=0, column=5)

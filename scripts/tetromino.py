@@ -4,10 +4,10 @@ from .settings import (
     CELL_SIZE,
     MOVE_DOWN_CD,
     MOVE_SIDES_CD,
-    ROTATE_CD,
-    TETROMINOS,
     NUM_COLS,
     NUM_ROWS,
+    ROTATE_CD,
+    TETROMINOS,
 )
 
 
@@ -60,9 +60,22 @@ class Tetromino(pygame.sprite.Sprite):
     def rotate_piece(self):
         self.rotate_cd = ROTATE_CD
         if self.rotate + 90 == 360:
+            self.check_and_fix_pos(0)
             self.rotate = 0
         else:
+            self.check_and_fix_pos(self.rotate + 90)
             self.rotate += 90
+
+    def check_and_fix_pos(self, future_rotate):
+        # check the future rotation when against left or right board edge
+        # if by rotation the piece goes out, we push it back in
+        temp_rotation = self.shape[future_rotate]
+        left_edge = self.position.x + min([point[0] for point in temp_rotation])
+        if left_edge < 0:
+            self.position.x -= left_edge
+        right_edge = self.position.x + max([point[0] for point in temp_rotation])
+        if right_edge > NUM_COLS - 1:
+            self.position.x -= right_edge - NUM_COLS + 1
 
     def move_down(self, down_pressed=False):
         self.move_down_cd = MOVE_DOWN_CD
