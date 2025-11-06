@@ -4,13 +4,8 @@ from .settings import CELL_SIZE, NUM_COLS, NUM_ROWS
 from .tetromino import Tetromino
 
 
-class Board(pygame.sprite.Sprite):
+class Board:
     def __init__(self, offset):
-        if hasattr(self, "containers"):
-            super().__init__(self.containers)
-        else:
-            super().__init__()
-
         self.rows = NUM_ROWS
         self.columns = NUM_COLS
         self.cell_size = CELL_SIZE

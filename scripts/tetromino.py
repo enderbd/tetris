@@ -13,11 +13,6 @@ from .settings import (
 
 class Tetromino(pygame.sprite.Sprite):
     def __init__(self, shape, row, column):
-        if hasattr(self, "containers"):
-            super().__init__("containers")
-        else:
-            super().__init__()
-
         self.shape = TETROMINOS[shape]
         self.rotate = 0
         self.rotate_cd = 0
