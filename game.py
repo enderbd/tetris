@@ -21,12 +21,11 @@ class TetrisGame:
                 if event.type == pygame.QUIT:
                     return
             self.screen.fill("black")
-            self.game_board.update(dt)
+            self.game_board.run(dt, self.screen)
             keys = pygame.key.get_pressed()
             if keys[pygame.K_q]:
                 self.running = False
 
-            self.game_board.draw(self.screen)
             pygame.display.flip()
             dt = self.clock.tick(FPS) / 1000
 
