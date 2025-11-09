@@ -1,6 +1,8 @@
-import pygame
+import random
 
-from .settings import CELL_SIZE, NUM_COLS, NUM_ROWS
+import pygame
+from .grid import Grid
+from .settings import CELL_SIZE, NUM_COLS, NUM_ROWS, TETROMINOS
 from .tetromino import Tetromino
 
 
@@ -12,14 +14,16 @@ class Board:
         self.width = self.columns * self.cell_size
         self.height = self.rows * self.cell_size
         self.offset = pygame.Vector2(offset)
-        self.board_rect = pygame.Rect(self.offset, (self.width, self.height))
-        self.board_surface = pygame.Surface(self.board_rect.size, pygame.SRCALPHA)
+        self.board_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         self.board_color = (100, 100, 100, 200)
         self.line_color = (255, 255, 255, 100)
         print(f"Board initialized: (w, h) = ({self.width}, {self.height})")
         self.moving_tetromino = None
-        self.blocks_group = pygame.sprite.Group()
+        self.letters = [k for k in TETROMINOS]
+        self.temp_current_shape = 0
         self.spawn_tetromino()
+        self.grid = Grid(NUM_ROWS, NUM_COLS, CELL_SIZE)
+        print(self.grid)
 
     def draw_border(self, screen):
         pygame.draw.line(
@@ -63,25 +67,57 @@ class Board:
 
     def run(self, dt, screen):
         self.draw(screen)
-        self.update(dt)
 
     def draw(self, screen):
         self.board_surface.fill(self.board_color)
-        # if self.moving_tetromino:
         self.moving_tetromino.draw(self.board_surface)
+        self.grid.draw(self.board_surface)
         self.draw_border(self.board_surface)
         self.draw_cells(self.board_surface)
+
         screen.blit(self.board_surface, self.offset)
 
-    def update(self, dt):
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_d]:
-            delete_blocks = self.moving_tetromino.blocks[:]
-            for block in delete_blocks:
-                self.moving_tetromino.blocks.remove(block)
+    def move_left(self):
+        if not self.next_move_collides(0, -1):
+            self.moving_tetromino.move_left()
+    def move_right(self):
+        if not self.next_move_collides(0, 1):
+            self.moving_tetromino.move_right()
 
-        if self.moving_tetromino:
-            self.moving_tetromino.update(dt)
+    def move_down(self):
+        if not self.next_move_collides(1, 0) and not self.moving_tetromino.landed:
+            self.moving_tetromino.move_down()
+        else:
+            self.next_tetromino()
+
+    def next_tetromino(self):
+        self.grid.add_tetromino(self.moving_tetromino)
+        self.spawn_tetromino()
+        # print(self.grid)
+
+    def next_move_collides(self, row_offset, column_offset):
+        # print(f"top_edge {self.moving_tetromino.get_bottom_edge()} ")
+        temp_blocks = [block for block in self.moving_tetromino.blocks[:]]
+        for block in temp_blocks:
+            next_y = block.pos.y + row_offset
+            next_x = block.pos.x + column_offset
+            # print(f"next x :{self.moving_tetromino.letter} {next_x}")
+            if next_y < self.rows and 0 <= next_x < self.columns:
+                if self.grid.is_colliding(int(next_y), int(next_x)):
+                    # print(f"block with pos {block.pos} is colliding")
+                    return True
+        return False
+
+    def rotate(self):
+        self.moving_tetromino.rotate_piece()
 
     def spawn_tetromino(self):
-        self.moving_tetromino = Tetromino(shape="T")
+        # random_shape = random.choice(list(TETROMINOS.keys()))
+        random_shape = ""
+        if len(self.letters) > 0:
+            random_shape = self.letters.pop(0)
+        else:
+            self.letters = [k for k in TETROMINOS]
+            random_shape = self.letters.pop(0)
+        print(f"Random shape : {random_shape}")
+        self.moving_tetromino = Tetromino(shape=random_shape)
