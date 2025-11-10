@@ -23,7 +23,7 @@ class Board:
         self.temp_current_shape = 0
         self.spawn_tetromino()
         self.grid = Grid(NUM_ROWS, NUM_COLS, CELL_SIZE)
-        print(self.grid)
+        # print(self.grid)
 
     def draw_border(self, screen):
         pygame.draw.line(
@@ -80,6 +80,7 @@ class Board:
     def move_left(self):
         if not self.next_move_collides(0, -1):
             self.moving_tetromino.move_left()
+
     def move_right(self):
         if not self.next_move_collides(0, 1):
             self.moving_tetromino.move_right()
@@ -93,7 +94,8 @@ class Board:
     def next_tetromino(self):
         self.grid.add_tetromino(self.moving_tetromino)
         self.spawn_tetromino()
-        # print(self.grid)
+        cleared_rows = self.grid.get_completed_rows()
+        print(self.grid)
 
     def next_move_collides(self, row_offset, column_offset):
         # print(f"top_edge {self.moving_tetromino.get_bottom_edge()} ")
@@ -112,12 +114,9 @@ class Board:
         self.moving_tetromino.rotate_piece()
 
     def spawn_tetromino(self):
-        # random_shape = random.choice(list(TETROMINOS.keys()))
-        random_shape = ""
-        if len(self.letters) > 0:
-            random_shape = self.letters.pop(0)
-        else:
+        if len(self.letters) == 0:
             self.letters = [k for k in TETROMINOS]
-            random_shape = self.letters.pop(0)
+        random_shape = random.choice(self.letters)
+        self.letters.remove(random_shape)
         print(f"Random shape : {random_shape}")
         self.moving_tetromino = Tetromino(shape=random_shape)

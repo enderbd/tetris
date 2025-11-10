@@ -7,7 +7,6 @@ class Grid:
         self.columns = columns
         self.cell_size = cell_size
         self.matrix = [[0 for i in range(columns)] for j in range(rows)]
-        # self.matrix[self.rows - 1] = [1 for _ in range(self.columns)]
 
     def is_block_inside(self, block_row, block_column):
         if 0 <= block_row < self.rows and 0 <= block_column < self.columns:
@@ -35,6 +34,31 @@ class Grid:
             if self.matrix[row][col] == 1:
                 return True
         return False
+
+    def get_completed_rows(self):
+        completed_rows = 0
+        for row in range(self.rows - 1, 0, -1):
+            if self.is_row_complete(row):
+                self.clear_row(row)
+                completed_rows += 1
+            elif completed_rows > 0:
+                self.move_rows_down(row, completed_rows)
+        return completed_rows
+
+    def is_row_complete(self, row):
+        for col in range(self.columns):
+            if self.matrix[row][col] == 0:
+                return False
+        return True
+
+    def clear_row(self, row):
+        for col in range(self.columns):
+            self.matrix[row][col] = 0
+
+    def move_rows_down(self, row, amount):
+        for col in range(self.columns):
+            self.matrix[row + amount][col] = self.matrix[row][col]
+            self.matrix[row][col] = 0
 
     def __repr__(self):
         grid_string = ""
