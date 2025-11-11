@@ -1,13 +1,16 @@
 import random
 
 import pygame
+
+from scripts.score_board import ScoreBoard
+
 from .grid import Grid
 from .settings import CELL_SIZE, NUM_COLS, NUM_ROWS, TETROMINOS
 from .tetromino import Tetromino
 
 
 class Board:
-    def __init__(self, offset):
+    def __init__(self, offset, leveled_event):
         self.rows = NUM_ROWS
         self.columns = NUM_COLS
         self.cell_size = CELL_SIZE
@@ -17,13 +20,15 @@ class Board:
         self.board_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         self.board_color = (100, 100, 100, 200)
         self.line_color = (255, 255, 255, 100)
-        print(f"Board initialized: (w, h) = ({self.width}, {self.height})")
+        # print(f"Board initialized: (w, h) = ({self.width}, {self.height})")
         self.moving_tetromino = None
         self.letters = [k for k in TETROMINOS]
         self.temp_current_shape = 0
         self.spawn_tetromino()
         self.grid = Grid(NUM_ROWS, NUM_COLS, CELL_SIZE)
         # print(self.grid)
+
+        self.score_board = ScoreBoard(offset=(340, 20), leveled_event=leveled_event)
 
     def draw_border(self, screen):
         pygame.draw.line(
@@ -77,6 +82,8 @@ class Board:
 
         screen.blit(self.board_surface, self.offset)
 
+        self.score_board.draw(screen)
+
     def move_left(self):
         if not self.next_move_collides(0, -1):
             self.moving_tetromino.move_left()
@@ -95,7 +102,9 @@ class Board:
         self.grid.add_tetromino(self.moving_tetromino)
         self.spawn_tetromino()
         cleared_rows = self.grid.get_completed_rows()
-        print(self.grid)
+        # print(self.grid)
+        if cleared_rows > 0:
+            self.score_board.update(cleared_rows)
 
     def next_move_collides(self, row_offset, column_offset):
         # print(f"top_edge {self.moving_tetromino.get_bottom_edge()} ")
@@ -118,5 +127,4 @@ class Board:
             self.letters = [k for k in TETROMINOS]
         random_shape = random.choice(self.letters)
         self.letters.remove(random_shape)
-        print(f"Random shape : {random_shape}")
         self.moving_tetromino = Tetromino(shape=random_shape)

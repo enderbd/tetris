@@ -1,6 +1,6 @@
 # main window settings
-SCREEN_WIDTH = 600
-SCREEN_HEIGHT = 800
+SCREEN_WIDTH = 560
+SCREEN_HEIGHT = 640
 FPS = 60
 
 # game board settings

@@ -11,20 +11,22 @@ class TetrisGame:
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
         self.running = True
-
+        self.move_down_speed = 500
+        self.drop_speed = 50
         # custom timers
         self.move_down_timer = pygame.USEREVENT + 1
-        pygame.time.set_timer(self.move_down_timer, 1000)
+        pygame.time.set_timer(self.move_down_timer, self.move_down_speed)
         self.move_sides_timer = pygame.USEREVENT + 2
         pygame.time.set_timer(self.move_sides_timer, 50)
         self.rotate_timer = pygame.USEREVENT + 3
         pygame.time.set_timer(self.rotate_timer, 200)
+        self.leveled_event = pygame.USEREVENT + 4
         # timer based conditionals
         self.can_move_down = True
         self.can_move_sides = True
         self.can_rotate = True
 
-        self.game_board = Board(offset=(20, 20))
+        self.game_board = Board(offset=(20, 20), leveled_event=self.leveled_event)
 
     def run(self):
         dt = 0
@@ -45,12 +47,12 @@ class TetrisGame:
                 exit(1)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_DOWN:
-                    pygame.time.set_timer(self.move_down_timer, 50)
+                    pygame.time.set_timer(self.move_down_timer, self.drop_speed)
                 if event.key == pygame.K_n:
                     self.game_board.spawn_tetromino()
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_DOWN:
-                    pygame.time.set_timer(self.move_down_timer, 300)
+                    pygame.time.set_timer(self.move_down_timer, self.move_down_speed)
             if event.type == self.move_down_timer:
                 self.can_move_down = True
                 self.game_board.move_down()
@@ -58,6 +60,11 @@ class TetrisGame:
                 self.can_move_sides = True
             if event.type == self.rotate_timer:
                 self.can_rotate = True
+            if event.type == self.leveled_event:
+                print(f"speed increased to {self.move_down_speed}")
+                if self.move_down_speed > 100:
+                    self.move_down_speed -= 20
+                    pygame.time.set_timer(self.move_down_timer, self.move_down_speed)
 
     def process_keys(self):
         keys = pygame.key.get_pressed()

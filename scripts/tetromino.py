@@ -2,11 +2,8 @@ import pygame
 
 from .settings import (
     CELL_SIZE,
-    MOVE_DOWN_CD,
-    MOVE_SIDES_CD,
     NUM_COLS,
     NUM_ROWS,
-    ROTATE_CD,
     TETROMINOS,
 )
 
@@ -17,7 +14,6 @@ class Tetromino:
         self.shape = TETROMINOS[shape]
         self.rotate = 0
         self.landed = False
-        print("Tetro initialized")
         self.center = pygame.Vector2(NUM_COLS // 2, 0)
         self.blocks = [Block(pos + self.center) for pos in self.shape[self.rotate]]
 
