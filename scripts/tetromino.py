@@ -15,7 +15,8 @@ class Tetromino:
         self.rotate = 0
         self.landed = False
         self.center = pygame.Vector2(NUM_COLS // 2, 0)
-        self.blocks = [Block(pos + self.center) for pos in self.shape[self.rotate]]
+        self.blocks = [Block(pos + self.center)
+                       for pos in self.shape[self.rotate]]
 
     def draw(self, screen):
         for block in self.blocks:
@@ -49,25 +50,25 @@ class Tetromino:
             for block in self.blocks:
                 block.pos.x = self.center.x
 
-    def move_down(self):
+    def move_down(self, amount=1):
         if self.get_top_edge() < NUM_ROWS - 1:
-            self.center.y += 1
+            self.center.y += amount
             for block in self.blocks:
-                block.pos.y += 1
+                block.pos.y += amount
         else:
             self.landed = True
 
-    def move_left(self):
+    def move_left(self, amount=1):
         if self.get_left_edge() > 0 and not self.landed:
-            self.center.x -= 1
+            self.center.x -= amount
             for block in self.blocks:
-                block.pos.x -= 1
+                block.pos.x -= amount
 
-    def move_right(self):
+    def move_right(self, amount=1):
         if self.get_right_edge() < NUM_COLS - 1 and not self.landed:
-            self.center.x += 1
+            self.center.x += amount
             for block in self.blocks:
-                block.pos.x += 1
+                block.pos.x += amount
 
     def get_left_edge(self):
         return self.center.x + min([point[0] for point in self.shape[self.rotate]])
